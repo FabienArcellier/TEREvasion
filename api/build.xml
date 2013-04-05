@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Build file to package the project for local or production target.
+  You need Phing for execute this file.
+  
+  @author Fabien Arcellier
+  @see http://www.phing.info/
+-->
+<project name="TEREvasion" basedir="." default="build.local">
+  <!-- Project properties -->
+  <property name="build.path" value="bin" />
+  <property name="build.local.path" value="/var/www/terevasion/api" />
+  
+  <!-- Project public target -->
+  <target name="build.local" >
+    <copy todir="${build.path}/App">
+      <fileset dir="./App">
+        <include name="**/*.*" />
+      </fileset>
+    </copy>
+    <copy todir="${build.path}/web">
+      <fileset dir="./web">
+        <include name="**/*.*" />
+      </fileset>
+    </copy>
+    <copy file="composer.json" tofile="${build.path}/composer.json" />
+    <exec command="composer install" dir="${build.path}" outputProperty="composerTrace" />
+    <echo message="${composerTrace}" />
+    <delete file="${build.path}/composer.json" />
+    
+    <copy file="resources/config.ini" tofile="${build.path}/resources/config.ini" />
+    <copy todir="${build.local.path}">
+      <fileset dir="${build.path}">
+        <include name="**/**.*" />
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.local" depends="clean" >
+    <delete includeemptydirs="true">
+      <fileset dir="${build.local.path}">
+        <include name="**/*.*" />
+      </fileset>
+    </delete>
+  </target>
+  
+  <target name="clean" >
+    <delete includeemptydirs="true">
+      <fileset dir="${build.path}">
+        <include name="**/*.*" />
+      </fileset>
+    </delete>
+  </target>
+  
+  <!-- Project internal target -->
+
+</project>
